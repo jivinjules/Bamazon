@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/jivinjules/Bamazon#readme",
   "dependencies": {
+    "cli-color": "^1.3.0",
     "inquirer": "^6.2.0",
     "mysql": "^2.16.0"
   }

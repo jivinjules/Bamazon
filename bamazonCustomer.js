@@ -1,6 +1,9 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
+//cli-color npm package will (hopefully) give color.
+var clc = require('cli-color');
+
 // create the connection information for the sql database
 var connection = mysql.createConnection({
     host: "localhost",
@@ -23,6 +26,11 @@ connection.connect(function (err) {
     start();
 });
 
+//pre-defined color for inquirer text.
+var textColor = clc.red.bold;
+var inquirerColor = clc.blue;
+
+//console.log(textColor("Is this working"));
 
 
 function start() {
@@ -31,7 +39,7 @@ function start() {
 
         type: "confirm",
         name: "confirm",
-        message: "Thank you for shopping with Bamazon! Would you like to purchase an item?",
+        message: inquirerColor("Thank you for shopping with Bamazon! Would you like to purchase an item?"),
         default: true
 
     }]).then(function (user) {
@@ -43,9 +51,22 @@ function start() {
     });
 }
 
-function endConnection() {
-    console.log("Thank you for shopping with Bamazon!")
-    connection.end();
+function anythingElse() {
+    inquirer.prompt([{
+
+        type: "confirm",
+        name: "confirm",
+        message: "Would you like to purchase an additional item today?",
+        default: true
+
+    }]).then(function (user) {
+        if (user.confirm === true) {
+            chooseDepartment();
+        } else {
+            console.log(textColor("Thank you for shopping with Bamazon!"));
+            connection.end();
+        }
+    });
 }
 
 // function which prompts the user for what action they should take
@@ -58,25 +79,25 @@ function chooseDepartment() {
             choices: ["ELECTRONICS", "JEWELRY", "COLLECTIBLES", "CLOTHING/ACCESSORIES", "ART"]
         })
         .then(function (answer) {
-        //the function that runs depends on the department
-        if (answer.departmentChoice.toUpperCase() === "ELECTRONICS") {
-            //function if the user chooses electronics    
-            electronics();
-        } else if (answer.departmentChoice.toUpperCase() === "JEWELRY") {
-            //function if the user chooses jewelry  
-            jewelry();
-        } else if (answer.departmentChoice.toUpperCase() === "COLLECTIBLES") {
-            //function if the user chooses collectibles
-            collectibles();
-        } else if (answer.departmentChoice.toUpperCase() === "CLOTHING/ACCESSORIES") {
-            //function if the user chooses clothing/accessories
-            clothing();
-        } else if (answer.departmentChoice.toUpperCase() === "ART") {
-            //function if the user chooces art
-            art();
+            //the function that runs depends on the department
+            if (answer.departmentChoice.toUpperCase() === "ELECTRONICS") {
+                //function if the user chooses electronics    
+                electronics();
+            } else if (answer.departmentChoice.toUpperCase() === "JEWELRY") {
+                //function if the user chooses jewelry  
+                jewelry();
+            } else if (answer.departmentChoice.toUpperCase() === "COLLECTIBLES") {
+                //function if the user chooses collectibles
+                collectibles();
+            } else if (answer.departmentChoice.toUpperCase() === "CLOTHING/ACCESSORIES") {
+                //function if the user chooses clothing/accessories
+                clothing();
+            } else if (answer.departmentChoice.toUpperCase() === "ART") {
+                //function if the user chooces art
+                art();
 
-        }
-    });
+            }
+        });
 }
 
 function userID() {
@@ -107,17 +128,17 @@ function userID() {
 
                 if (response[0].STOCK_QUANTITY < answer.stock && response[0].STOCK_QUANTITY > 0) {
                     console.log("\n");
-                    console.log("Insufficient quantity. Please choose another amount.");
+                    console.log(textColor("Insufficient quantity. Please choose another amount."));
                     console.log("\n");
                     userID();
                 } else if (response[0].STOCK_QUANTITY === 0) {
                     console.log("\n");
-                    console.log("I'm sorry. Bamazon is out of that product");
+                    console.log(textColor("I'm sorry. Bamazon is out of that product"));
                     console.log("\n");
                     chooseDepartment();
                 } else if (response[0].STOCK_QUANTITY >= answer.stock) {
                     console.log("\n")
-                    console.log("Thank you ordering the item: " + response[0].PRODUCT_NAME + ". It is in queue for shipping.\n");
+                    console.log(textColor("Thank you ordering the item: " + response[0].PRODUCT_NAME + ". It is in queue for shipping.\n"));
 
                     // Update the mySQL Database
 
@@ -133,8 +154,9 @@ function userID() {
                             console.log("I'm sorry. Bamazon is currently down.  Try again later.")
                         };
 
-                        console.log("Your order has been shipped! You have been charged $" + response[0].PRICE * answer.stock);
-                        endConnection();
+                        console.log("Your order has been shipped! You have been charged $" + response[0].PRICE * answer.stock  + "\n");
+                        console.log("\n--------------------------------------------")
+                        anythingElse();
 
                     })
 
@@ -142,14 +164,17 @@ function userID() {
             });
         });
 
+
+
+
 }
 
 
 
 function electronics() {
 
-    console.log("Thank you for purchasing from electronics")
-    console.log("Items Available: \n")
+    console.log(textColor("Thank you for purchasing from our Electronics Department!\n"));
+    console.log(inquirerColor("Items Available: \n"));
 
     var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'ELECTRONICS'";
 
@@ -167,7 +192,7 @@ function electronics() {
 function art() {
 
     console.log("Thank you for purchasing from from our Art Department!\n")
-    console.log("Items Available: \n")
+    console.log(inquirerColor("Items Available: \n"));
 
     var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'ART'";
 
@@ -185,7 +210,7 @@ function art() {
 function clothing() {
 
     console.log("Thank you for purchasing from our Clothing & Accessories Department!\n")
-    console.log("Items Available: \n")
+    console.log(inquirerColor("Items Available: \n"));
 
     var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'CLOTHING/ACCESSORIES'";
 
@@ -204,7 +229,7 @@ function clothing() {
 function collectibles() {
 
     console.log("Thank you for purchasing from our Collectibles Department!\n")
-    console.log("Items Available: \n")
+    console.log(inquirerColor("Items Available: \n"));
 
     var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'COLLECTIBLES'";
 
@@ -223,20 +248,20 @@ function collectibles() {
 function jewelry() {
 
     console.log("Thank you for purchasing from our Jewelry Department!\n")
-    console.log("Items Available: \n")
+    console.log(inquirerColor("Items Available: \n"));
 
-       var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'JEWELRY'";
-    
-    connection.query(query, function(err, results) {
-      if (err) throw err;
-              var choiceArray = [];
-              for (var i = 0; i < results.length; i++) {
-                choiceArray.push("Item ID: " + results[i].ID, "Product: " + results[i].PRODUCT_NAME, "Price: " + "$" + results[i].PRICE);
-              }
-              console.log(choiceArray);
-              userID();
-            });
+    var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'JEWELRY'";
+
+    connection.query(query, function (err, results) {
+        if (err) throw err;
+        var choiceArray = [];
+        for (var i = 0; i < results.length; i++) {
+            choiceArray.push("Item ID: " + results[i].ID, "Product: " + results[i].PRODUCT_NAME, "Price: " + "$" + results[i].PRICE);
         }
+        console.log(choiceArray);
+        userID();
+    });
+}
 
 
 
