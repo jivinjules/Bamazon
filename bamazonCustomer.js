@@ -105,36 +105,32 @@ function userID() {
     inquirer.prompt([{
         name: "id",
         type: "input",
-        message: "Please enter the ID of the item you wish to purchase."
+        message: "Please review the Item ID's and make a selection."
     },
 
     {
         name: "stock",
         type: "input",
-        message: "Please enter a quantity to purchase."
+        message: "PLEASE ENTER A QUANTITY."
     }
     ])
         .then(function (answer) {
 
             var query = "SELECT * FROM PRODUCTS Where ?";
 
-            connection.query(query, {
-                ID: answer.id
-
-            }, function (error, response) {
+            connection.query(query, {ID: answer.id}, function (error, response) {
                 if (error) {
                     console.log("I'm sorry. An error occurred")
                 };
 
                 if (response[0].STOCK_QUANTITY < answer.stock && response[0].STOCK_QUANTITY > 0) {
                     console.log("\n");
-                    console.log(textColor("Insufficient quantity. Please choose another amount."));
-                    console.log("\n");
+                    console.log(textColor("Insufficient quantity. Bamazon currently has " + response[0].STOCK_QUANTITY + " available. Please choose another amount.\n"));
                     userID();
                 } else if (response[0].STOCK_QUANTITY === 0) {
                     console.log("\n");
-                    console.log(textColor("I'm sorry. Bamazon is out of that product"));
-                    console.log("\n");
+                    console.log(textColor("I'm sorry. Bamazon is out of that product.\n"));
+
                     chooseDepartment();
                 } else if (response[0].STOCK_QUANTITY >= answer.stock) {
                     console.log("\n")
@@ -154,7 +150,7 @@ function userID() {
                             console.log("I'm sorry. Bamazon is currently down.  Try again later.")
                         };
 
-                        console.log("Your order has been shipped! You have been charged $" + response[0].PRICE * answer.stock  + "\n");
+                        console.log("Your order has been shipped! You have been charged $" + response[0].PRICE * answer.stock + "\n");
                         console.log("\n--------------------------------------------")
                         anythingElse();
 
@@ -163,32 +159,35 @@ function userID() {
                 }
             });
         });
-
-
-
-
 }
 
-
-
+//function called if they choose electronics
 function electronics() {
 
     console.log(textColor("Thank you for purchasing from our Electronics Department!\n"));
-    console.log(inquirerColor("Items Available: \n"));
+    console.log(textColor("The following items are available. \n"));
 
     var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'ELECTRONICS'";
 
     connection.query(query, function (err, results) {
         if (err) throw err;
-        var choiceArray = [];
+        var itemsInString = '';
         for (var i = 0; i < results.length; i++) {
-            choiceArray.push("Item ID: " + results[i].ID, "Product: " + results[i].PRODUCT_NAME, "Price: " + "$" + results[i].PRICE);
-        }
-        console.log(choiceArray);
-        userID();
-    });
+            itemsInString = '';
+            itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+            itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+            itemsInString += 'Price: $' + results[i].PRICE;
+
+            console.log("\n" + itemsInString);
+                    
+        };
+        console.log("\n------------------------------");
+        console.log("Please enter the Item ID of the item you wish to purchase.")
+});
+userID();
 }
 
+//function called if they choose ART
 function art() {
 
     console.log("Thank you for purchasing from from our Art Department!\n")
@@ -198,15 +197,23 @@ function art() {
 
     connection.query(query, function (err, results) {
         if (err) throw err;
-        var choiceArray = [];
+        var itemsInString = '';
         for (var i = 0; i < results.length; i++) {
-            choiceArray.push("Item ID: " + results[i].ID, "Product: " + results[i].PRODUCT_NAME, "Price: " + "$" + results[i].PRICE);
-        }
-        console.log(choiceArray);
-        userID();
-    });
+            itemsInString = '';
+            itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+            itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+            itemsInString += 'Price: $' + results[i].PRICE;
+
+            console.log("\n" + itemsInString);
+                    
+        };
+        console.log("\n------------------------------");
+        console.log("Please enter the Item ID of the item you wish to purchase.")
+});
+userID();
 }
 
+//function called if they choose clothing/accessories
 function clothing() {
 
     console.log("Thank you for purchasing from our Clothing & Accessories Department!\n")
@@ -216,16 +223,23 @@ function clothing() {
 
     connection.query(query, function (err, results) {
         if (err) throw err;
-        var choiceArray = [];
+        var itemsInString = '';
         for (var i = 0; i < results.length; i++) {
-            choiceArray.push("Item ID: " + results[i].ID, "Product: " + results[i].PRODUCT_NAME, "Price: " + "$" + results[i].PRICE);
-        }
-        console.log(choiceArray);
-        userID();
-    });
+            itemsInString = '';
+            itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+            itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+            itemsInString += 'Price: $' + results[i].PRICE;
+
+            console.log("\n" + itemsInString);
+                    
+        };
+        console.log("\n------------------------------");
+        console.log("Please enter the Item ID of the item you wish to purchase.")
+});
+userID();
 }
 
-
+//function called if they choose collectibles
 function collectibles() {
 
     console.log("Thank you for purchasing from our Collectibles Department!\n")
@@ -235,16 +249,23 @@ function collectibles() {
 
     connection.query(query, function (err, results) {
         if (err) throw err;
-        var choiceArray = [];
+        var itemsInString = '';
         for (var i = 0; i < results.length; i++) {
-            choiceArray.push("Item ID: " + results[i].ID, "Product: " + results[i].PRODUCT_NAME, "Price: " + "$" + results[i].PRICE);
-        }
-        console.log(choiceArray);
-        userID();
-    });
+            itemsInString = '';
+            itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+            itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+            itemsInString += 'Price: $' + results[i].PRICE;
+
+            console.log("\n" + itemsInString);
+                    
+        };
+        console.log("\n------------------------------");
+        console.log("Please enter the Item ID of the item you wish to purchase.")
+});
+userID();
 }
 
-
+//function called if they choose jewelry
 function jewelry() {
 
     console.log("Thank you for purchasing from our Jewelry Department!\n")
@@ -254,15 +275,21 @@ function jewelry() {
 
     connection.query(query, function (err, results) {
         if (err) throw err;
-        var choiceArray = [];
+        var itemsInString = '';
         for (var i = 0; i < results.length; i++) {
-            choiceArray.push("Item ID: " + results[i].ID, "Product: " + results[i].PRODUCT_NAME, "Price: " + "$" + results[i].PRICE);
-        }
-        console.log(choiceArray);
-        userID();
-    });
-}
+            itemsInString = '';
+            itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+            itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+            itemsInString += 'Price: $' + results[i].PRICE;
 
+            console.log("\n" + itemsInString);
+                    
+        };
+        console.log("\n------------------------------");
+        console.log("Please enter the Item ID of the item you wish to purchase.")
+});
+userID();
+}
 
 
 
