@@ -33,7 +33,7 @@ var saleColor = clc.green;
 var lowInventoryColor = clc.blue;
 
 //color for adding inventory
-var newInventoryColor = clc.purple;
+var newInventoryColor = clc.cyanBright;
 
 //color for adding a new product
 var newProductColor = clc.yellow;
@@ -59,138 +59,235 @@ function start() {
 
 function chooseAction() {// function which prompts the user for what action they should take
     inquirer
-        .prompt( [ {
+        .prompt([{
             name: "doToday",
             type: "rawlist",
             message: "What action would you like to take? (Please enter the item number)",
             choices: ["VIEW PRODUCTS FOR SALE", "VIEW LOW INVENTORY", "ADD INVENTORY", "ADD NEW PRODUCTS"]
         }])
         .then(function (answer) {
-                       
+
             //the function that runs depends on the department
             if (answer.doToday.toUpperCase() === "VIEW PRODUCTS FOR SALE") {
-                //function if the user chooses electronics    
+                //function if the user chooses to view all products for sale    
                 viewProducts();
             } else if (answer.doToday.toUpperCase() === "VIEW LOW INVENTORY") {
-                //function if the user chooses jewelry  
+                //function if the user chooses to view low inventory  
                 viewLowInventory();
             } else if (answer.doToday.toUpperCase() === "ADD INVENTORY") {
-                //function if the user chooses collectibles
+                //function if the user chooses to add inventory
                 addInventory();
             } else if (answer.doToday.toUpperCase() === "ADD NEW PRODUCTS") {
-                //function if the user chooses clothing/accessories
+                //function if the user chooses to add new products
                 addProducts();
-            } 
+            }
         });
 }
 
 function viewProducts() {
-     //testing function
-     // prompt for info about the item being put up for auction
-  inquirer
-  .prompt([
-    {
-      name: "confirm",
-      type: "confirm",
-      message: saleColor("Would you like to view all products currently for sale in Bamazon?"),
-      default: true
-    }])
-    .then(function (user) {
-        if (user.confirm === true) {
-            console.log(saleColor("Items Available: \n"));
+    //testing function
+    // prompt for info about the item being put up for auction
+    inquirer
+        .prompt([
+            {
+                name: "confirm",
+                type: "confirm",
+                message: saleColor("Would you like to view all products currently for sale in Bamazon?"),
+                default: true
+            }])
+        .then(function (user) {
+            if (user.confirm === true) {
+                console.log(saleColor("Items Available: \n"));
 
-            var query = "SELECT * FROM PRODUCTS";
-        
-            connection.query(query, function (err, results) {
-                if (err) throw err;
-                var itemsInString = '';
-                for (var i = 0; i < results.length; i++) {
-                    itemsInString = '';
-                    itemsInString += 'Item ID: ' + results[i].ID + ' || ';
-                    itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
-                    itemsInString += 'Price: $' + results[i].PRICE + ' || ';
-                    itemsInString += 'Stock Quantity: ' + results[i].STOCK_QUANTITY;
-        
-                    console.log("\n" + itemsInString);
-                            
-                };
-                console.log("\n------------------------------");
-                console.log(saleColor("The items for sale are listed above. You are now being returned to the main menu."));
-                chooseAction();
-        
+                var query = "SELECT * FROM PRODUCTS";
+
+                connection.query(query, function (err, results) {
+                    if (err) throw err;
+                    var itemsInString = '';
+                    for (var i = 0; i < results.length; i++) {
+                        itemsInString = '';
+                        itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+                        itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+                        itemsInString += 'Price: $' + results[i].PRICE + ' || ';
+                        itemsInString += 'Stock Quantity: ' + results[i].STOCK_QUANTITY;
+
+                        console.log("\n" + itemsInString);
+
+                    };
+                    console.log("\n------------------------------");
+                    console.log(saleColor("The items for sale are listed above. You are now being returned to the main menu."));
+                    chooseAction();
+
+                });
+            } else {
+                console.log("Returning to main menu...");
+                start();
+            }
         });
-        } else {
-            console.log("Returning to main menu...");
-            start();
-        }
-    });
 };
 
 function viewLowInventory() {
     //testing function
-    console.log(lowInventoryColor("There are less than five available for these"))
+    // prompt for info about the item being put up for auction
+    inquirer
+        .prompt([
+            {
+                name: "confirm",
+                type: "confirm",
+                message: lowInventoryColor("Would you like to view all products with less than 5 items in stock?"),
+                default: true
+            }])
+        .then(function (user) {
+            if (user.confirm === true) {
+                console.log(lowInventoryColor("The following items have low inventory: \n"));
+
+                var query = "SELECT ID, PRODUCT_NAME, STOCK_QUANTITY FROM PRODUCTS WHERE STOCK_QUANTITY <= '5'";
+
+                connection.query(query, function (err, results) {
+                    if (err) throw err;
+                    var itemsInString = '';
+                    for (var i = 0; i < results.length; i++) {
+                        itemsInString = '';
+                        itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+                        itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+                        itemsInString += 'Stock Quantity: ' + results[i].STOCK_QUANTITY;
+
+                        console.log("\n" + itemsInString);
+
+                    };
+                    console.log("\n------------------------------");
+                    console.log(lowInventoryColor("If you would like to add inventory to any items, choose 'ADD INVENTORY' from the menu below."));
+                    chooseAction();
+
+                });
+            } else {
+                console.log("Returning to main menu...");
+                start();
+            }
+        });
 };
 
-function addInventory() {
-    //testing function
-    console.log(newInventoryColor("You have added new inventory"))
-};
+function getItemsforInventory() {
+    console.log(newInventoryColor("You have chose to add new inventory. The following items are available for updates: \n"));
 
-function addProducts() {
-    //testing function
-     // prompt for info about the item being put up for auction
-  inquirer
-  .prompt([
-    {
-      name: "product",
-      type: "input",
-      message: newProductColor("What is the product you would like to add?")
-    },
-    {
-      name: "department",
-      type: "input",
-      message: newProductColor("Please add which department your product belongs in.")
-    },
-    {
-      name: "price",
-      type: "input",
-      message: newProductColor("Enter the price of the product in decimal form with no dollar sign."),
-      validate: function(value) {
-        if (isNaN(value) === false) {
-          return true;
-        }
-        return false;
-      }
-    }, 
-    {
-        name: "stock",
-        type: "input",
-        message: newProductColor("Enter the amount of items available for purchase."),
-        validate: function(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        }
-      }
-  ])
-  .then(function(answer) {
-    // when finished prompting, insert a new item into the db with that info
-    connection.query(
-      "INSERT INTO PRODUCTS SET ?",
-      {
-        PRODUCT_NAME: answer.product,
-        DEPARTMENT_NAME: answer.department,
-        PRICE: answer.price,
-        STOCK_QUANTITY: answer.stock
-      },
-      function(err) {
+    var query = "SELECT * FROM PRODUCTS";
+
+    connection.query(query, function (err, results) {
         if (err) throw err;
-        console.log(newProductColor("You have successfully added " + answer.stock + " " + answer.product + "(s) for a cost of " + answer.price + " each.\n"));
-        // re-prompt the user for if they want to bid or post
-        start();
-      }
-    );
-  });
+        var itemsInString = '';
+        for (var i = 0; i < results.length; i++) {
+            itemsInString = '';
+            itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+            itemsInString += 'Product: ' + results[i].PRODUCT_NAME;
+
+            console.log("\n" + itemsInString);
+
+        };
+        console.log("\n------------------------------");
+
+    });
 };
+
+    function addInventory() {
+        getItemsforInventory();
+        inquirer
+            .prompt([
+                {
+                    name: "product",
+                    type: "input",
+                    message: newProductColor("Use the list of products and enter the ID number of the product you would like to update")
+                },
+                {
+                    name: "amount",
+                    type: "input",
+                    message: newProductColor("Please enter the new amount of inventory."),
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+
+            ])
+            .then(function (answer) {
+                connection.query(
+                    "UPDATE PRODUCTS SET ? WHERE ?",
+                    [
+                        {
+                            STOCK_QUANTITY: answer.amount
+                        },
+                        {
+                            ID: answer.amount
+                        }
+                    ], function (err) {
+                        if (err) throw err;
+                        console.log(newProductColor("You have successfully added " + answer.amount + " items to the stock quantity.\n"));
+                        // re-prompt the user for if they want to bid or post
+                        start();
+                    }
+                )
+            })
+    }
+
+
+
+
+    function addProducts() {
+        //testing function
+        // prompt for info about the item being put up for auction
+        inquirer
+            .prompt([
+                {
+                    name: "product",
+                    type: "input",
+                    message: newProductColor("What is the product you would like to add?")
+                },
+                {
+                    name: "department",
+                    type: "input",
+                    message: newProductColor("Please add which department your product belongs in.")
+                },
+                {
+                    name: "price",
+                    type: "input",
+                    message: newProductColor("Enter the price of the product in decimal form with no dollar sign."),
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                {
+                    name: "stock",
+                    type: "input",
+                    message: newProductColor("Enter the amount of items available for purchase."),
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            ])
+            .then(function (answer) {
+                // when finished prompting, insert a new item into the db with that info
+                connection.query(
+                    "INSERT INTO PRODUCTS SET ?",
+                    {
+                        PRODUCT_NAME: answer.product,
+                        DEPARTMENT_NAME: answer.department,
+                        PRICE: answer.price,
+                        STOCK_QUANTITY: answer.stock
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        console.log(newProductColor("You have successfully added " + answer.stock + " " + answer.product + "(s) for a cost of " + answer.price + " each.\n"));
+                        // re-prompt the user for if they want to bid or post
+                        start();
+                    }
+                );
+            });
+    };
 
