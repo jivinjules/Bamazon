@@ -178,7 +178,9 @@ function getItemsforInventory() {
         for (var i = 0; i < results.length; i++) {
             itemsInString = '';
             itemsInString += 'Item ID: ' + results[i].ID + ' || ';
-            itemsInString += 'Product: ' + results[i].PRODUCT_NAME;
+            itemsInString += 'Product: ' + results[i].PRODUCT_NAME + ' || ';
+            itemsInString += 'Product: ' + results[i].STOCK_QUANTITY;
+
 
             console.log("\n" + itemsInString);
 
