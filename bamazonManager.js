@@ -168,7 +168,7 @@ function viewLowInventory() {
 };
 
 function getItemsforInventory() {
-    console.log(newInventoryColor("You have chose to add new inventory. The following items are available for updates: \n"));
+    console.log(newInventoryColor("You have chosen to add new inventory. The following items are available for updates: \n"));
 
     var query = "SELECT * FROM PRODUCTS";
 
