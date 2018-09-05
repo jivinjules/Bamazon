@@ -225,7 +225,7 @@ function getItemsforInventory() {
                     ], function (err) {
                         if (err) throw err;
                         console.log(newProductColor("You have successfully added " + answer.amount + " items to the stock quantity.\n"));
-                        // re-prompt the user for if they want to bid or post
+                        // Head back to the start function
                         start();
                     }
                 )
@@ -237,7 +237,7 @@ function getItemsforInventory() {
 
     function addProducts() {
         //testing function
-        // prompt for info about the item being put up for auction
+        // prompt for info about the item being added
         inquirer
             .prompt([
                 {
