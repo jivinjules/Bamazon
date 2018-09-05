@@ -2,7 +2,7 @@
 Bamazon is an Amazon-like store-front that allows users to view items in different categories and 'purchase' items. The user is able to see items available for purchase, as well as price. The 'manager" of Bamazon has the ability to view products for sale, view low inventory products, add to inventory, and add new products. Both the user's and the manager's actions automatically update the pre-existing database in MySQL.
 
 ## Computer Installations
-To use Bamazon, MySQL must first be installed. If it has not been installed, please visit the [MySql Download Page.](https://www.mysql.com/downloads/). Additionally, the Bamazon requires the following npm's: MySQL (`npm install mysql` ), Cli-Color (`npm install cli-color`), inquirer (`npm install inquirer`).
+To use Bamazon, MySQL must first be installed. If it has not been installed, please visit the [MySql Download Page.](https://www.mysql.com/downloads/). Additionally, the Bamazon requires the following npm's: MySQL (`npm install mysql` ), Cli-Color (`npm install cli-color`), inquirer (`npm install inquirer`), and cli-table (`npm install cli-table`).
 
 ## Developer's Toolkit
 Bamazon was created through node.js, MySql, and JavaScript.
@@ -17,3 +17,8 @@ After typing `node bamazonManager.js` into the prompt, managers are able to cont
   3. *Add New Inventory*: When the manager decided to add new inventory, Bamazon first offers every product name and how many are available. The managers are then able to decide which product to add inventory.
   4. *Add New Products*: The manager is able to add a completely new product, as well as the category, amount, and set-price.
   ![screenshot-manager](/Images/screenshot-manager.png)
+
+## Application Flow for Supervisors
+After typing `node bamazonSupervisor.js` into the prompt, supervisors are able to do two functions:
+1. *View Product Sales by Department*
+2. *Create a New Department*: With this option, Supervisors are able to create a new Department such as "Books," as well as the Overhead costs associated with the new department.
