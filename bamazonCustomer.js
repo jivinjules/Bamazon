@@ -76,7 +76,7 @@ function chooseDepartment() {
             name: "departmentChoice",
             type: "rawlist",
             message: "Please enter the number for the department you like to shop in today?",
-            choices: ["ELECTRONICS", "JEWELRY", "COLLECTIBLES", "CLOTHING/ACCESSORIES", "ART"]
+            choices: ["ELECTRONICS", "JEWELRY", "COLLECTIBLES", "CLOTHING/ACCESSORIES", "ART", "VIEW ALL PRODUCTS"]
         })
         .then(function (answer) {
             //the function that runs depends on the department
@@ -95,6 +95,9 @@ function chooseDepartment() {
             } else if (answer.departmentChoice.toUpperCase() === "ART") {
                 //function if the user chooces art
                 art();
+            } else if (answer.departmentChoice.toUpperCase() === "VIEW ALL PRODUCTS") {
+                //function if the user wants to see all products
+                viewAllProducts();
 
             }
         });
@@ -145,13 +148,28 @@ function userID() {
                         {
                             ID: answer.id
                         }
-                    ], function (error, data) {
+                    ], 
+                    function (error, data) {
                         if (error) {
                             console.log("I'm sorry. Bamazon is currently down.  Try again later.")
-                        };
+                        }
 
-                        console.log("Your order has been shipped! You have been charged $" + response[0].PRICE * answer.stock + "\n");
-                        console.log("\n--------------------------------------------")
+                    })
+                    connection.query("UPDATE PRODUCTS SET ? WHERE ?", [
+                        {
+                            PRODUCT_SALES: response[0].PRICE * answer.stock
+                        },
+                        {
+                            ID: answer.id
+                        }
+                    ], 
+                    function (error, data) {
+                        if (error) {
+                            console.log("I'm sorry. Bamazon is currently down.  Try again later.")
+                        }
+
+                       else { console.log("Your order has been shipped! You have been charged $" + response[0].PRICE * answer.stock + "\n");
+                        console.log("\n--------------------------------------------") }
                         anythingElse();
 
                     })
@@ -272,6 +290,32 @@ function jewelry() {
     console.log(inquirerColor("Items Available: \n"));
 
     var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS WHERE DEPARTMENT_NAME = 'JEWELRY'";
+
+    connection.query(query, function (err, results) {
+        if (err) throw err;
+        var itemsInString = '';
+        for (var i = 0; i < results.length; i++) {
+            itemsInString = '';
+            itemsInString += 'Item ID: ' + results[i].ID + ' || ';
+            itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
+            itemsInString += 'Price: $' + results[i].PRICE;
+
+            console.log("\n" + itemsInString);
+                    
+        };
+        console.log("\n------------------------------");
+        console.log("Please enter the Item ID of the item you wish to purchase.")
+});
+userID();
+}
+
+//function called if they choose to view all products
+function  viewAllProducts() {
+
+    console.log("Ever item in Bamazon will be listed below\n")
+    console.log(inquirerColor("Items Available: \n"));
+
+    var query = "SELECT ID, PRODUCT_NAME, PRICE FROM PRODUCTS";
 
     connection.query(query, function (err, results) {
         if (err) throw err;

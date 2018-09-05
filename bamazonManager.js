@@ -286,7 +286,7 @@ function getItemsforInventory() {
                     function (err) {
                         if (err) throw err;
                         console.log(newProductColor("You have successfully added " + answer.stock + " " + answer.product + "(s) for a cost of " + answer.price + " each.\n"));
-                        // re-prompt the user for if they want to bid or post
+                        // back to the start
                         start();
                     }
                 );
