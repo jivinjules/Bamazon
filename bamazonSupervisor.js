@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-var {table} = require("table");
+var Table = require("cli-table");
 
 //cli-color npm package will give color.
 var clc = require('cli-color');
@@ -33,14 +33,6 @@ var prodcutSalesColor = clc.green;
 //color for viewing low inventory
 var newDeptColor = clc.blue;
 
-var data = [
-    ['0A', '0B', '0C'],
-    ['1A', '1B', '1C'],
-    ['2A', '2B', '2C']
-];
-
-var output = table(data);
-
 function start() {
 
     inquirer.prompt([{
@@ -69,50 +61,64 @@ function chooseAction() {// function which prompts the user for what action they
             choices: ["VIEW PRODUCT SALES BY DEPARTMENT", "CREATE A NEW DEPARTMENT"]
         }])
         .then(function (answer) {
-               if (answer.doToday.toUpperCase() === "VIEW PRODUCT SALES BY DEPARTMENT") {
+            if (answer.doToday.toUpperCase() === "VIEW PRODUCT SALES BY DEPARTMENT") {
                 //function if the user chooses to view all product sales by department    
                 viewProductSales();
             } else if (answer.doToday.toUpperCase() === "CREATE A NEW DEPARTMENT") {
                 //function if the user chooses to create a new department  
                 createNewDepartment();
-            } 
+            }
         });
 }
 
 function createNewDepartment() {
     //testing function
-        // prompt for info about the department being added
-        inquirer
-            .prompt([
+    // prompt for info about the department being added
+    inquirer
+        .prompt([
+            {
+                name: "department",
+                type: "input",
+                message: newDeptColor("Enter the department you wish to add")
+            },
+            {
+                name: "overhead_cost",
+                type: "input",
+                message: newDeptColor("What is the overhead cost for the department?")
+            }
+        ])
+        .then(function (answer) {
+            // when finished prompting, insert a new item into the db with that info
+            connection.query(
+                "INSERT INTO DEPARTMENTS SET ?",
                 {
-                    name: "department",
-                    type: "input",
-                    message: newDeptColor("Enter the department you wish to add")
+                    DEPARTMENT_NAME: answer.department,
+                    OVERHEAD_COSTS: answer.overhead_cost
                 },
-                {
-                    name: "overhead_cost",
-                    type: "input",
-                    message: newDeptColor("What is the overhead cost for the department?")
+                function (err) {
+                    if (err) throw err;
+                    console.log(newDeptColor("You have successfully added the department: " + answer.department + ".\n"));
+                    //sends supervisor back to the start
+                    start();
                 }
-            ])
-            .then(function (answer) {
-                // when finished prompting, insert a new item into the db with that info
-                connection.query(
-                    "INSERT INTO DEPARTMENTS SET ?",
-                    {
-                        DEPARTMENT_NAME: answer.department,
-                        OVERHEAD_COSTS: answer.overhead_cost
-                    },
-                    function (err) {
-                        if (err) throw err;
-                        console.log(newDeptColor("You have successfully added the department: " + answer.department + ".\n"));
-                        //sends supervisor back to the start
-                        start();
-                    }
-                );
-            });
+            );
+        });
 }
 
 function viewProductSales() {
-    console.log(prodcutSalesColor(output));
+    connection.query('SELECT * FROM DEPARTMENTS', function (error, res) {
+        if (error) throw error;
+        var table = new Table({
+            head: ['ID', 'DEPARTMENT', 'OVERHEAD COSTS', 'PRODUCT SALES', 'TOTAL PROFIT']
+        });
+
+        for (i = 0; i < res.length; i++) {
+            table.push(
+                [res[i].ID, res[i].DEPARTMENT_NAME, "$" + res[i].OVERHEAD_COSTS]
+            );
+        }
+        console.log(table.toString());
+        start();
+    });
+    
 }

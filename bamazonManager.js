@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require('cli-table');
 
 //cli-color npm package will give color.
 var clc = require('cli-color');
@@ -99,29 +100,23 @@ function viewProducts() {
             if (user.confirm === true) {
                 console.log(saleColor("Items Available: \n"));
 
-                var query = "SELECT * FROM PRODUCTS";
-
-                connection.query(query, function (err, results) {
-                    if (err) throw err;
-                    var itemsInString = '';
-                    for (var i = 0; i < results.length; i++) {
-                        itemsInString = '';
-                        itemsInString += 'Item ID: ' + results[i].ID + ' || ';
-                        itemsInString += 'Product Name: ' + results[i].PRODUCT_NAME + ' || ';
-                        itemsInString += 'Price: $' + results[i].PRICE + ' || ';
-                        itemsInString += 'Stock Quantity: ' + results[i].STOCK_QUANTITY;
-
-                        console.log("\n" + itemsInString);
-
-                    };
-                    console.log("\n------------------------------");
-                    console.log(saleColor("The items for sale are listed above. You are now being returned to the main menu."));
-                    chooseAction();
-
+                connection.query('SELECT * FROM PRODUCTS', function (error, res) {
+                    if (error) throw error;
+                    var table = new Table({
+                        head: ['ID', 'PRODUCT NAME', 'DEPARTMENT', 'PRICE', 'STOCK QUANTITY']
+                    });
+            
+                    for (i = 0; i < res.length; i++) {
+                        table.push(
+                            [res[i].ID, res[i].PRODUCT_NAME, res[i].DEPARTMENT_NAME, "$" + res[i].PRICE, res[i].STOCK_QUANTITY]
+                        );
+                    }
+                    console.log(table.toString());
+                    start();
                 });
             } else {
                 console.log("Returning to main menu...");
-                start();
+                chooseAction();
             }
         });
 };
